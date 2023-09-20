@@ -9,21 +9,21 @@ const LOCAL_STORAGE_KEY = 'videoplayer-current-time';
 document.addEventListener('DOMContentLoaded', () => {
   const savedTime = localStorage.getItem(LOCAL_STORAGE_KEY);
 
-  if (savedTime) {
-    player.setCurrentTime(savedTime).catch(error => {
-      switch (error.name) {
-        case 'RangeError':
-          console.error(
-            'The time was less than 0 or greater than the video’s duration.'
-          );
-          break;
+  //   if (savedTime) {
+  //     player.setCurrentTime(savedTime).catch(error => {
+  //       switch (error.name) {
+  //         case 'RangeError':
+  //           console.error(
+  //             'The time was less than 0 or greater than the video’s duration.'
+  //           );
+  //           break;
 
-        default:
-          console.error('Some unknown error occurred.');
-          break;
-      }
-    });
-  }
+  //         default:
+  //           console.error('Some unknown error occurred.');
+  //           break;
+  //       }
+  //     });
+  //   }
 });
 
 player.on(
