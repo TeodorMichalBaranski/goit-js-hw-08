@@ -4,15 +4,33 @@ import throttle from 'lodash.throttle';
 const iframe = document.querySelector('#vimeo-player');
 const player = new Player(iframe);
 
-const LOCAL_STORAGE_KEY = 'videoplayer-current-time';
-
-document.addEventListener('DOMContentLoaded', () => {
-  const savedTime = localStorage.getItem(LOCAL_STORAGE_KEY);
-});
-
 player.on(
   'timeupdate',
-  throttle(data => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, data.seconds);
+  throttle(event => {
+    localStorage.setItem('videoplayer-current-time', event.seconds.toString());
   }, 1000)
-);
+); // Throttling the saving to once per second
+
+window.addEventListener('DOMContentLoaded', () => {
+  let savedTime = localStorage.getItem('videoplayer-current-time');
+
+  if (savedTime) {
+    player
+      .setCurrentTime(parseFloat(savedTime))
+      .then(seconds => {
+        console.log('Video seeked to: ' + seconds);
+      })
+      .catch(error => {
+        switch (error.name) {
+          case 'RangeError':
+            console.error('Error: Time was out of range.');
+            break;
+          default:
+            console.error('Error: ', error);
+            break;
+        }
+      });
+  }
+});
+
+//------------------
