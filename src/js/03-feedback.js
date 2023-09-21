@@ -1,45 +1,55 @@
 import throttle from 'lodash.throttle';
 
-const btnEl = document.querySelector('button[type="submit"]');
-const emailEl = document.querySelector('input[type="email"]');
-const messageEl = document.querySelector('textarea[name="message"]');
+const form = document.querySelector('.feedback-form');
+const emailInput = form.querySelector('input[name="email"]');
+const messageInput = form.querySelector('textarea[name="message"]');
 
-let data = {};
-
-if (!localStorage.getItem('feedback-form-state')) {
-  data = {
-    email: '',
-    message: '',
+function saveFormState() {
+  const formData = {
+    email: emailInput.value,
+    message: messageInput.value,
   };
-} else {
-  data = JSON.parse(localStorage.getItem('feedback-form-state'));
+
+  localStorage.setItem('feedback-form-state', JSON.stringify(formData));
 }
 
-const checkLocalStorage = () => {
-  const savedData = JSON.parse(localStorage.getItem('feedback-form-state'));
+const throttledSaveFormState = throttle(saveFormState, 500);
 
-  if (savedData) {
-    emailEl.value = savedData.email;
-    messageEl.value = savedData.message;
-  } else {
-    emailEl.value = '';
-    messageEl.value = '';
+function loadFormState() {
+  const savedFormData = localStorage.getItem('feedback-form-state');
+
+  if (savedFormData) {
+    const { email, message } = JSON.parse(savedFormData);
+    emailInput.value = email;
+    messageInput.value = message;
   }
-};
-
-checkLocalStorage();
-
-function localData(event) {
-  data[event.target.name] = event.target.value;
-  localStorage.setItem('feedback-form-state', JSON.stringify(data));
 }
 
-function resetLocalSorage(event) {
-  event.preventDefault();
-  localStorage.clear();
-  checkLocalStorage();
+function handleSubmit() {
+  if (!emailInput.value || !messageInput.value) {
+    alert('Upewnij się żę wszystkie pola są wypełnione ');
+    return;
+  }
+
+  const formData = {
+    email: emailInput.value,
+    message: messageInput.value,
+  };
+
+  console.log(formData);
+  localStorage.removeItem('feedback-form-state');
+  form.reset();
 }
 
-emailEl.addEventListener('input', throttle(localData, 500));
-messageEl.addEventListener('input', throttle(localData, 500));
-btnEl.addEventListener('click', resetLocalSorage);
+form.addEventListener('input', e => {
+  if (e.target === emailInput || e.target === messageInput) {
+    throttledSaveFormState();
+  }
+});
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  handleSubmit();
+});
+
+document.addEventListener('DOMContentLoaded', loadFormState);

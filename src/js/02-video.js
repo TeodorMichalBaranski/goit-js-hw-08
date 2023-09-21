@@ -6,30 +6,13 @@ const player = new Player(iframe);
 
 player.on(
   'timeupdate',
-  throttle(event => {
-    localStorage.setItem('videoplayer-current-time', event.seconds.toString());
+  throttle(data => {
+    localStorage.setItem('videoplayer-current-time', data.seconds.toString());
   }, 1000)
 );
 
 window.addEventListener('DOMContentLoaded', () => {
   let savedTime = localStorage.getItem('videoplayer-current-time');
 
-  if (savedTime) {
-    player.setCurrentTime(parseFloat(savedTime));
-    //   .then(seconds => {
-    //     console.log('Video seeked to: ' + seconds);
-    //   })
-    //   .catch(error => {
-    //     switch (error.name) {
-    //       case 'RangeError':
-    //         console.error('Error: Time was out of range.');
-    //         break;
-    //       default:
-    //         console.error('Error: ', error);
-    //         break;
-    //     }
-    //   });
-  }
+  player.setCurrentTime(parseFloat(savedTime));
 });
-
-//------------------
